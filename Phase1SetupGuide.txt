@@ -1,0 +1,52 @@
+Step 1:
+- Download and set up docker desktop
+
+
+
+
+
+Step 2: Set up elasticsearch 
+- Run this command from your cmd/powershell
+
+docker run -p 127.0.0.1:9200:9200 -d --name elasticsearch -e "discovery.type=single-node" -e "xpack.security.enabled=false" -e "xpack.license.self_generated.type=trial" -v "elasticsearch-data:/usr/share/elasticsearch/data" docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+
+- This is going to setup an elasticsearch container bound to port 9200 on your local
+
+
+
+
+
+Step 3: Get the dummy data
+- Dummy data used for the indexes is taken from a github repo named loghub. Clone onto local
+
+git clone https://github.com/logpai/loghub.git
+
+We'll be using Thunderbird, Apache and HDFS data
+
+
+
+
+
+Step 4: Convert the .log data to NDJSON inorder to push into the indexes that will be created
+- Just run the log2ndjson python scripts. Remember to switch out the file paths as per your local
+
+
+
+
+
+Step 5: Go to the indexer ipynb file
+run through all the steps provided
+
+
+
+
+
+Step 6: Kibana setup
+--check yo kibana token
+docker exec -it elasticsearch elasticsearch-service-tokens create elastic/kibana kibana-token
+
+--Input that token into ELASTICSEARCH_SERVICE_ACCOUNT_TOKEN variable
+docker run -d --name kibana -p 5601:5601 -e ELASTICSEARCH_HOSTS="http://host.docker.internal:9200" -e ELASTICSEARCH_SERVICE_ACCOUNT_TOKEN="AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS10b2tlbjoyNldRemZYYlFUbUc3Y0gtSmxhNzZB" -e ELASTICSEARCH_SSL_VERIFICATIONMODE="none" docker.elastic.co/kibana/kibana:8.15.0
+
+your instance of kibana will be bound to 5601, so go to localhost:5601 to access the interface
+from there you can create views and do other kibana stuff
